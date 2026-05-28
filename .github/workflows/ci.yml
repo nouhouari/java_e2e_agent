@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-agent:
+    name: Build Agent (Java)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - run: ./gradlew build shadowJar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fxagent-jar
+          path: agent/build/libs/fxagent.jar
+          retention-days: 1
+
+  build-driver:
+    name: Build Driver (TypeScript)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: driver
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: driver/package-lock.json
+
+      - run: npm ci
+      - run: npm run build
+
+  integration-test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: [build-agent, build-driver]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: driver/package-lock.json
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: fxagent-jar
+          path: agent/build/libs
+
+      - name: Install Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Prepare test app
+        working-directory: agent
+        run: ./gradlew compileTestJava copyJavaFxLibs
+
+      - name: Install driver dependencies
+        working-directory: driver
+        run: npm ci
+
+      - name: Run integration tests
+        working-directory: driver
+        run: xvfb-run --auto-servernum npm test
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-screenshots
+          path: driver/reports/screenshots/
+          retention-days: 7
