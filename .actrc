@@ -1,3 +1,4 @@
 --platform ubuntu-latest=catthehacker/ubuntu:act-latest
 --artifact-server-path /tmp/act-artifacts
 --env GITHUB_TOKEN=local
+--container-daemon-socket -

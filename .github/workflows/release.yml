@@ -21,8 +21,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-
-      - uses: gradle/actions/setup-gradle@v4
+          cache: gradle
+          cache-dependency-path: agent/build.gradle.kts
 
       - run: ./gradlew shadowJar
 
