@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.nouhouari"
-version = "0.2.0"
+version = "0.2.1"
 
 val javalinVersion: String by project
 val jacksonVersion: String by project
