@@ -28,19 +28,15 @@ export class JavaFxClient {
   }
 
   async queryNode(selector: string, windowIndex?: number): Promise<AgentQueryResponse> {
-    return this.request<AgentQueryResponse>('POST', '/api/v1/elements/query', {
-      selector,
-      windowIndex: windowIndex ?? 0,
-      maxResults: 1,
-    });
+    const body: Record<string, unknown> = { selector, maxResults: 1 };
+    if (windowIndex !== undefined) body.windowIndex = windowIndex;
+    return this.request<AgentQueryResponse>('POST', '/api/v1/elements/query', body);
   }
 
   async queryAll(selector: string, windowIndex?: number): Promise<AgentQueryResponse> {
-    return this.request<AgentQueryResponse>('POST', '/api/v1/elements/query', {
-      selector,
-      windowIndex: windowIndex ?? 0,
-      maxResults: 1000,
-    });
+    const body: Record<string, unknown> = { selector, maxResults: 1000 };
+    if (windowIndex !== undefined) body.windowIndex = windowIndex;
+    return this.request<AgentQueryResponse>('POST', '/api/v1/elements/query', body);
   }
 
   async performAction(
