@@ -18,6 +18,22 @@ export class JavaFxClient {
     this.requestTimeoutMs = requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS;
   }
 
+  async shutdown(): Promise<void> {
+    // Short timeout — agent may close the connection before responding
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2000);
+    try {
+      await fetch(`${this.baseUrl}/api/v1/shutdown`, {
+        method: 'POST',
+        signal: controller.signal,
+      });
+    } catch {
+      // Expected: agent exits during the request
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async isReady(): Promise<boolean> {
     try {
       await this.request<AgentHealthResponse>('GET', '/api/v1/health');

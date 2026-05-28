@@ -5,6 +5,7 @@ import com.sicpa.fxagent.api.v1.ActionController;
 import com.sicpa.fxagent.api.v1.ElementController;
 import com.sicpa.fxagent.api.v1.HealthController;
 import com.sicpa.fxagent.api.v1.ScreenshotController;
+import com.sicpa.fxagent.api.v1.ShutdownController;
 import com.sicpa.fxagent.api.v1.WindowController;
 import com.sicpa.fxagent.util.AgentConfig;
 import io.javalin.Javalin;
@@ -28,6 +29,7 @@ public final class AgentServer {
         var screenshotController = new ScreenshotController();
         var actionExecutor = new ActionExecutor();
         var actionController = new ActionController(actionExecutor);
+        var shutdownController = new ShutdownController();
 
         app = Javalin.create(cfg -> {
             cfg.jsonMapper(JsonMapperFactory.create());
@@ -47,6 +49,7 @@ public final class AgentServer {
         app.get("/api/v1/scene/tree", elementController::fullTree);
         app.post("/api/v1/screenshot", screenshotController::capture);
         app.post("/api/v1/actions", actionController::execute);
+        app.post("/api/v1/shutdown", shutdownController::shutdown);
 
         app.start(config.port());
         log.info("AgentServer started on port {}", config.port());

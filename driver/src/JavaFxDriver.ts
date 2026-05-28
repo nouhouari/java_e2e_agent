@@ -112,20 +112,32 @@ export class JavaFxDriver {
   }
 
   async close(): Promise<void> {
-    if (this._process) {
-      this._process.kill('SIGTERM');
+    if (this._process && this._client) {
+      const exited = this._waitForExit();
+      try {
+        await this._client.shutdown();
+      } catch {
+        // agent unreachable — fall through to signal-based termination
+      }
 
-      await new Promise<void>((resolve) => {
-        const timer = setTimeout(() => {
-          this._process?.kill('SIGKILL');
-          resolve();
-        }, 5000);
+      const gracefulExit = await Promise.race([
+        exited.then(() => true),
+        new Promise<boolean>((r) => setTimeout(() => r(false), 2000)),
+      ]);
 
-        this._process?.on('exit', () => {
-          clearTimeout(timer);
-          resolve();
-        });
-      });
+      if (!gracefulExit) {
+        this._process.kill('SIGTERM');
+        const termExit = await Promise.race([
+          exited.then(() => true),
+          new Promise<boolean>((r) => setTimeout(() => r(false), 1000)),
+        ]);
+        if (!termExit) {
+          this._process.kill('SIGKILL');
+          await exited;
+        }
+      }
+    } else if (this._process) {
+      this._process.kill('SIGKILL');
     }
 
     this._client = null;
@@ -135,6 +147,16 @@ export class JavaFxDriver {
       process.removeListener('exit', this._exitHandler);
       this._exitHandler = null;
     }
+  }
+
+  private _waitForExit(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (!this._process || this._process.exitCode !== null) {
+        resolve();
+        return;
+      }
+      this._process.once('exit', () => resolve());
+    });
   }
 
   get isLaunched(): boolean {
