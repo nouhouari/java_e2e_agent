@@ -45,9 +45,11 @@ export class JavaFxLocator {
     const timeout = opts?.timeout ?? this.defaultTimeoutMs;
     await this.waitForActionable(timeout);
     const sel = this.resolvedSelector();
-    const response = await this.client.performAction(sel, 'click', {
+    const params: Record<string, unknown> = {
       clickCount: opts?.clickCount ?? 1,
-    });
+    };
+    if (opts?.strategy) params.strategy = opts.strategy;
+    const response = await this.client.performAction(sel, 'click', params);
     if (!response.success) {
       throw new ActionError(sel, 'click', response.message);
     }
@@ -103,6 +105,16 @@ export class JavaFxLocator {
     const response = await this.client.performAction(sel, 'focus');
     if (!response.success) {
       throw new ActionError(sel, 'focus', response.message);
+    }
+  }
+
+  async setText(value: string, opts?: { timeout?: number }): Promise<void> {
+    const timeout = opts?.timeout ?? this.defaultTimeoutMs;
+    await this.waitForExists(timeout);
+    const sel = this.resolvedSelector();
+    const response = await this.client.performAction(sel, 'setText', { value });
+    if (!response.success) {
+      throw new ActionError(sel, 'setText', response.message);
     }
   }
 

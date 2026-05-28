@@ -19,6 +19,7 @@ public final class ActionExecutor {
     private final SelectAction selectAction = new SelectAction();
     private final FocusAction focusAction = new FocusAction();
     private final ScrollAction scrollAction = new ScrollAction();
+    private final SetTextAction setTextAction = new SetTextAction();
 
     public CompletableFuture<ActionResponse> execute(ActionRequest request) {
         return FxExecutor.supplyOnFxThread(() -> {
@@ -34,6 +35,7 @@ public final class ActionExecutor {
                 case "select" -> selectAction.execute(node, request);
                 case "focus" -> focusAction.execute(node);
                 case "scroll" -> scrollAction.execute(node);
+                case "setText" -> setTextAction.execute(node, request);
                 default -> throw new UnsupportedActionException("Unknown action: " + request.action());
             };
 

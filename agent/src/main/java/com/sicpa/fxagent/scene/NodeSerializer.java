@@ -93,6 +93,17 @@ public final class NodeSerializer {
                 Object value = choice.getValue();
                 props.put("value", value != null ? value.toString() : null);
             }
+            case ColorPicker colorPicker -> {
+                javafx.scene.paint.Color color = colorPicker.getValue();
+                if (color != null) {
+                    String hex = String.format("#%02X%02X%02X",
+                            (int) (color.getRed() * 255),
+                            (int) (color.getGreen() * 255),
+                            (int) (color.getBlue() * 255));
+                    props.put("value", hex);
+                    props.put("opacity", color.getOpacity());
+                }
+            }
             case Slider slider -> {
                 props.put("value", slider.getValue());
                 props.put("min", slider.getMin());

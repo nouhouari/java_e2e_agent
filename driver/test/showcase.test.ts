@@ -139,6 +139,21 @@ describe('ShowcaseApp Integration Tests', () => {
       const status = await fx.locator('#choiceStatus').text();
       assert.strictEqual(status, 'Large');
     });
+
+    it('should set a ColorPicker color by hex', async () => {
+      await fx.locator('#colorPicker').selectOption('#FF0000');
+      const status = await fx.locator('#colorStatus').text();
+      assert.strictEqual(status, '#FF0000');
+
+      const value = await fx.locator('#colorPicker').getAttribute('value');
+      assert.strictEqual(value, '#FF0000');
+    });
+
+    it('should accept CSS color names', async () => {
+      await fx.locator('#colorPicker').selectOption('blue');
+      const value = await fx.locator('#colorPicker').getAttribute('value');
+      assert.strictEqual(value, '#0000FF');
+    });
   });
 
   // ---- Display & Range ----
@@ -178,7 +193,7 @@ describe('ShowcaseApp Integration Tests', () => {
     it('should read TableView row count', async () => {
       const info = await fx.locator('#tableView').nodeInfo();
       assert.ok(info.properties, 'TableView should have properties');
-      assert.strictEqual(info.properties!['rowCount'], 4);
+      assert.strictEqual(info.properties!['rowCount'], 20);
       assert.strictEqual(info.properties!['columnCount'], 3);
     });
   });

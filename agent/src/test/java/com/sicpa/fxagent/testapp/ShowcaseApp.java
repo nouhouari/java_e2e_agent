@@ -34,10 +34,39 @@ public class ShowcaseApp extends Application {
         scrollPane.setFitToHeight(true);
         scrollPane.setId("mainScrollPane");
 
-        Scene scene = new Scene(scrollPane, 900, 700);
+        HBox infoPanel = createInfoPanel();
+
+        VBox root = new VBox(infoPanel, scrollPane);
+        VBox.setVgrow(scrollPane, javafx.scene.layout.Priority.ALWAYS);
+
+        Scene scene = new Scene(root, 900, 700);
         stage.setScene(scene);
         stage.setTitle("FxAgent Showcase");
         stage.show();
+    }
+
+    private HBox createInfoPanel() {
+        Label icon = new Label("▶");
+        icon.setId("demoIcon");
+        icon.setStyle("-fx-font-size: 16; -fx-text-fill: #b45309;");
+
+        Label status = new Label("Ready — waiting for demo to start");
+        status.setId("demoStatus");
+        status.setStyle("-fx-font-size: 14; -fx-text-fill: #1f2937;");
+
+        javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        CheckBox verbose = new CheckBox("Verbose");
+        verbose.setId("verboseMode");
+        verbose.setSelected(true);
+
+        HBox panel = new HBox(10, icon, status, spacer, verbose);
+        panel.setId("demoInfoPanel");
+        panel.setAlignment(Pos.CENTER_LEFT);
+        panel.setPadding(new Insets(10, 15, 10, 15));
+        panel.setStyle("-fx-background-color: #fef3c7; -fx-border-color: #f59e0b; -fx-border-width: 0 0 1 0;");
+        return panel;
     }
 
     private Tab createTextInputsTab() {
@@ -183,12 +212,31 @@ public class ShowcaseApp extends Application {
             if (newVal != null) choiceStatus.setText(newVal);
         });
 
+        ColorPicker colorPicker = new ColorPicker(javafx.scene.paint.Color.web("#3B82F6"));
+        colorPicker.setId("colorPicker");
+
+        Label colorStatus = new Label("#3B82F6");
+        colorStatus.setId("colorStatus");
+        javafx.scene.shape.Rectangle colorSwatch = new javafx.scene.shape.Rectangle(30, 20, colorPicker.getValue());
+        colorSwatch.setId("colorSwatch");
+        colorPicker.valueProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null) {
+                String hex = String.format("#%02X%02X%02X",
+                        (int) (newVal.getRed() * 255),
+                        (int) (newVal.getGreen() * 255),
+                        (int) (newVal.getBlue() * 255));
+                colorStatus.setText(hex);
+                colorSwatch.setFill(newVal);
+            }
+        });
+
         VBox content = new VBox(10,
                 title,
                 new HBox(10, checkBox, checkBoxStatus),
                 new HBox(10, new Label("Radio:"), radioOption1, radioOption2, radioOption3, radioStatus),
                 new HBox(10, new Label("ComboBox:"), comboBox, comboStatus),
-                new HBox(10, new Label("ChoiceBox:"), choiceBox, choiceStatus)
+                new HBox(10, new Label("ChoiceBox:"), choiceBox, choiceStatus),
+                new HBox(10, new Label("ColorPicker:"), colorPicker, colorSwatch, colorStatus)
         );
         content.setPadding(new Insets(15));
 
@@ -254,7 +302,7 @@ public class ShowcaseApp extends Application {
 
         TableView<Person> tableView = new TableView<>();
         tableView.setId("tableView");
-        tableView.setPrefHeight(150);
+        tableView.setPrefHeight(180);
 
         TableColumn<Person, String> nameCol = new TableColumn<>("Name");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -273,7 +321,23 @@ public class ShowcaseApp extends Application {
                 new Person("Alice", 30, "Paris"),
                 new Person("Bob", 25, "London"),
                 new Person("Charlie", 35, "Berlin"),
-                new Person("Diana", 28, "Madrid")
+                new Person("Diana", 28, "Madrid"),
+                new Person("Ethan", 42, "Rome"),
+                new Person("Fiona", 29, "Dublin"),
+                new Person("George", 38, "Athens"),
+                new Person("Hannah", 31, "Vienna"),
+                new Person("Ivan", 27, "Prague"),
+                new Person("Julia", 34, "Warsaw"),
+                new Person("Kevin", 45, "Stockholm"),
+                new Person("Linda", 33, "Oslo"),
+                new Person("Marco", 26, "Lisbon"),
+                new Person("Nina", 39, "Copenhagen"),
+                new Person("Oscar", 41, "Brussels"),
+                new Person("Paula", 32, "Amsterdam"),
+                new Person("Quentin", 36, "Helsinki"),
+                new Person("Rachel", 24, "Zurich"),
+                new Person("Samir", 47, "Istanbul"),
+                new Person("Tara", 30, "Budapest")
         ));
 
         Label tableSelectionStatus = new Label("None selected");

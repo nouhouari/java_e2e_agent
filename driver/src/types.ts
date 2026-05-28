@@ -34,6 +34,7 @@ export interface FillOptions {
 export interface ClickOptions {
   clickCount?: number;
   timeout?: number;
+  strategy?: 'default' | 'robot';
 }
 
 export interface SelectOptions {
