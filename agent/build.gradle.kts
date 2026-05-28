@@ -4,6 +4,9 @@ plugins {
     id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
+group = "io.github.nouhouari"
+version = "0.1.0"
+
 val javalinVersion: String by project
 val jacksonVersion: String by project
 val slf4jVersion: String by project
@@ -68,12 +71,17 @@ tasks.register("prepareShowcase") {
 tasks.shadowJar {
     mergeServiceFiles()
 
+    archiveBaseName.set("fxagent")
+    archiveVersion.set("")
+
     manifest {
         attributes(
             "Premain-Class" to "com.sicpa.fxagent.FxAgent",
             "Agent-Class" to "com.sicpa.fxagent.FxAgent",
             "Can-Redefine-Classes" to "false",
-            "Can-Retransform-Classes" to "false"
+            "Can-Retransform-Classes" to "false",
+            "Implementation-Title" to "FxAgent",
+            "Implementation-Version" to project.version
         )
     }
 

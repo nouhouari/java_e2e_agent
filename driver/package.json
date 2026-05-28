@@ -2,8 +2,33 @@
   "name": "javafx-driver",
   "version": "0.1.0",
   "description": "Playwright-like driver for JavaFX desktop automation via HTTP agent",
+  "keywords": [
+    "javafx",
+    "automation",
+    "testing",
+    "e2e",
+    "desktop",
+    "playwright",
+    "cucumber"
+  ],
+  "author": "Nourreddine Houari",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nouhouari/java_e2e_agent.git",
+    "directory": "driver"
+  },
+  "bugs": {
+    "url": "https://github.com/nouhouari/java_e2e_agent/issues"
+  },
+  "homepage": "https://github.com/nouhouari/java_e2e_agent#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -15,7 +40,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "test": "node --import tsx test/showcase.test.ts",
-    "test:integration": "node --import tsx test/showcase.test.ts"
+    "test:integration": "node --import tsx test/showcase.test.ts",
+    "demo": "node --import tsx test/demo.ts"
   },
   "dependencies": {
     "pino": "^9.0.0",

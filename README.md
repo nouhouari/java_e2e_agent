@@ -41,7 +41,7 @@ cd driver
 npm install
 
 # 3. Run the demo
-node --import tsx test/demo.ts
+npm run demo
 ```
 
 You'll see:
@@ -52,6 +52,10 @@ You'll see:
 - Screenshots saved to `driver/reports/demo/`
 
 To slow it down, increase `STEP_PAUSE` at the top of `driver/test/demo.ts`. To speed it up, drop it. The full test suite (`npm test`) runs the same actions with no pauses in ~10 seconds.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
 
 ## Running the full test suite
 
