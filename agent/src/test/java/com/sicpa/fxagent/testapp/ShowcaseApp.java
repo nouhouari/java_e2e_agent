@@ -416,6 +416,24 @@ public class ShowcaseApp extends Application {
             dialog.show();
         });
 
+        // --- Blocking Confirmation (showAndWait — historical deadlock reproducer) ---
+        Button blockingBtn = new Button("Show Blocking Confirmation");
+        blockingBtn.setId("showAlertBlockingBtn");
+        Label blockingResult = new Label("No result");
+        blockingResult.setId("alertBlockingResult");
+        blockingBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm");
+            alert.setHeaderText("Delete the item?");
+            alert.setContentText("This action cannot be undone.");
+            alert.getDialogPane().setId("confirmationDialog");
+            // showAndWait blocks the FX thread in a nested event loop.
+            // With the fire-and-forget click action, the agent still services
+            // requests from inside that nested loop so the test can dismiss it.
+            ButtonType result = alert.showAndWait().orElse(null);
+            blockingResult.setText(result != null ? result.getText() : "Dismissed");
+        });
+
         // --- Choice Dialog ---
         Button choiceBtn = new Button("Show Choice");
         choiceBtn.setId("showChoiceBtn");
@@ -439,6 +457,7 @@ public class ShowcaseApp extends Application {
                 title,
                 new HBox(10, alertBtn, alertResult),
                 new HBox(10, infoBtn, infoResult),
+                new HBox(10, blockingBtn, blockingResult),
                 new HBox(10, inputBtn, inputResult),
                 new HBox(10, choiceBtn, choiceResult)
         );

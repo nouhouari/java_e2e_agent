@@ -251,6 +251,25 @@ describe('ShowcaseApp Integration Tests', () => {
       await fx.locator('text=OK').click();
       await fx.locator('#confirmationDialog').waitFor({ state: 'hidden', timeout: 5000 });
     });
+
+    it('should not deadlock when handler uses Alert.showAndWait()', async () => {
+      // Regression test: prior to v0.2.2, the click action was synchronous and
+      // waited for the user's onAction handler to return. If that handler
+      // called Alert.showAndWait(), it blocked the FX thread forever and the
+      // HTTP response never came back — making the dialog impossible to
+      // dismiss. With fire-and-forget click dispatch, this scenario works.
+      //
+      // Note: 'text=OK' is intentionally scoped to '#confirmationDialog' here
+      // because earlier dialog tests leave their result labels reading "OK",
+      // and the unscoped text= selector would otherwise match those Labels
+      // (walked first in the showcase window) instead of the dialog's button.
+      await fx.locator('#showAlertBlockingBtn').click({ timeout: 5000 });
+      await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+      await fx.locator('#confirmationDialog >> text=OK').click({ timeout: 5000 });
+      await fx.locator('#confirmationDialog').waitFor({ state: 'hidden', timeout: 5000 });
+      const result = await fx.locator('#alertBlockingResult').text();
+      assert.strictEqual(result, 'OK');
+    });
   });
 
   // ---- Selectors ----
