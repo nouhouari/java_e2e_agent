@@ -26,7 +26,8 @@ public class ShowcaseApp extends Application {
                 createButtonsTab(),
                 createSelectionTab(),
                 createDisplayTab(),
-                createListsTab()
+                createListsTab(),
+                createDialogsTab()
         );
 
         ScrollPane scrollPane = new ScrollPane(tabPane);
@@ -356,6 +357,93 @@ public class ShowcaseApp extends Application {
         content.setPadding(new Insets(15));
 
         return new Tab("Lists", content);
+    }
+
+    private Tab createDialogsTab() {
+        Label title = new Label("Dialog Controls");
+        title.getStyleClass().add("section-title");
+        title.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+
+        // --- Confirmation Alert ---
+        Button alertBtn = new Button("Show Confirmation");
+        alertBtn.setId("showAlertBtn");
+        Label alertResult = new Label("No result");
+        alertResult.setId("alertResult");
+        alertBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm");
+            alert.setHeaderText("Are you sure?");
+            alert.setContentText("This action cannot be undone.");
+            alert.getDialogPane().setId("confirmationDialog");
+            alert.setOnHidden(ev -> {
+                ButtonType result = alert.getResult();
+                alertResult.setText(result != null ? result.getText() : "Dismissed");
+            });
+            alert.show();
+        });
+
+        // --- Information Alert ---
+        Button infoBtn = new Button("Show Info");
+        infoBtn.setId("showInfoBtn");
+        Label infoResult = new Label("No result");
+        infoResult.setId("infoResult");
+        infoBtn.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Info");
+            alert.setHeaderText("Operation completed");
+            alert.setContentText("Your changes have been saved.");
+            alert.getDialogPane().setId("infoDialog");
+            alert.setOnHidden(ev -> infoResult.setText("Acknowledged"));
+            alert.show();
+        });
+
+        // --- Text Input Dialog ---
+        Button inputBtn = new Button("Show Input");
+        inputBtn.setId("showInputBtn");
+        Label inputResult = new Label("No input");
+        inputResult.setId("inputResult");
+        inputBtn.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog("");
+            dialog.setTitle("Input");
+            dialog.setHeaderText("What is your name?");
+            dialog.setContentText("Name:");
+            dialog.getDialogPane().setId("inputDialog");
+            dialog.getEditor().setId("inputDialogField");
+            dialog.setOnHidden(ev -> {
+                String result = dialog.getResult();
+                inputResult.setText(result != null ? "Hello, " + result : "Cancelled");
+            });
+            dialog.show();
+        });
+
+        // --- Choice Dialog ---
+        Button choiceBtn = new Button("Show Choice");
+        choiceBtn.setId("showChoiceBtn");
+        Label choiceResult = new Label("No choice");
+        choiceResult.setId("choiceResult");
+        choiceBtn.setOnAction(e -> {
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("Medium",
+                    FXCollections.observableArrayList("Small", "Medium", "Large"));
+            dialog.setTitle("Choose");
+            dialog.setHeaderText("Pick a size");
+            dialog.setContentText("Size:");
+            dialog.getDialogPane().setId("choiceDialog");
+            dialog.setOnHidden(ev -> {
+                String result = dialog.getResult();
+                choiceResult.setText(result != null ? "Picked: " + result : "Cancelled");
+            });
+            dialog.show();
+        });
+
+        VBox content = new VBox(15,
+                title,
+                new HBox(10, alertBtn, alertResult),
+                new HBox(10, infoBtn, infoResult),
+                new HBox(10, inputBtn, inputResult),
+                new HBox(10, choiceBtn, choiceResult)
+        );
+        content.setPadding(new Insets(15));
+        return new Tab("Dialogs", content);
     }
 
     public static class Person {

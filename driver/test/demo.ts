@@ -124,6 +124,42 @@ async function main() {
   await step('Toggling it back on...',
     () => fx.locator('#verboseMode').click());
 
+  console.log('\n=== Tab 6: Dialogs ===');
+  await step('Switching to Dialogs tab...',
+    () => fx.locator('text=Dialogs').click());
+
+  await step('Opening a Confirmation alert...',
+    () => fx.locator('#showAlertBtn').click());
+  await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+  await fx.screenshot('11-confirmation-dialog');
+  await step('Clicking OK on the confirmation...',
+    () => fx.locator('text=OK').click());
+  console.log(`     status: "${await fx.locator('#alertResult').text()}"`);
+
+  await step('Opening the same dialog again...',
+    () => fx.locator('#showAlertBtn').click());
+  await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+  await step('Clicking Cancel this time...',
+    () => fx.locator('text=Cancel').click());
+  console.log(`     status: "${await fx.locator('#alertResult').text()}"`);
+
+  await step('Opening a TextInputDialog...',
+    () => fx.locator('#showInputBtn').click());
+  await fx.locator('#inputDialog').waitFor({ state: 'visible', timeout: 5000 });
+  await step('Filling the input field with "Alice"...',
+    () => fx.locator('#inputDialogField').fill('Alice'));
+  await fx.screenshot('12-input-dialog');
+  await step('Clicking OK to confirm input...',
+    () => fx.locator('text=OK').click());
+  console.log(`     status: "${await fx.locator('#inputResult').text()}"`);
+
+  await step('Opening an Information alert...',
+    () => fx.locator('#showInfoBtn').click());
+  await fx.locator('#infoDialog').waitFor({ state: 'visible', timeout: 5000 });
+  await step('Acknowledging the info dialog...',
+    () => fx.locator('text=OK').click());
+  console.log(`     status: "${await fx.locator('#infoResult').text()}"`);
+
   await fx.locator('#demoStatus').setText('Demo complete!');
   console.log('\nCapturing per-element screenshot of TableView...');
   const tableBuf = await fx.locator('#tableView').screenshot();

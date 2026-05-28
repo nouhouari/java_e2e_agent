@@ -198,6 +198,61 @@ describe('ShowcaseApp Integration Tests', () => {
     });
   });
 
+  // ---- Dialogs ----
+
+  describe('Dialogs', () => {
+    before(async () => {
+      await fx.locator('text=Dialogs').click();
+    });
+
+    it('should confirm a dialog (click OK)', async () => {
+      await fx.locator('#showAlertBtn').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+      await fx.locator('text=OK').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'hidden', timeout: 5000 });
+      const result = await fx.locator('#alertResult').text();
+      assert.strictEqual(result, 'OK');
+    });
+
+    it('should cancel a dialog (click Cancel)', async () => {
+      await fx.locator('#showAlertBtn').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+      await fx.locator('text=Cancel').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'hidden', timeout: 5000 });
+      const result = await fx.locator('#alertResult').text();
+      assert.strictEqual(result, 'Cancel');
+    });
+
+    it('should fill a TextInputDialog and confirm', async () => {
+      await fx.locator('#showInputBtn').click();
+      await fx.locator('#inputDialog').waitFor({ state: 'visible', timeout: 5000 });
+      await fx.locator('#inputDialogField').fill('Alice');
+      await fx.locator('text=OK').click();
+      await fx.locator('#inputDialog').waitFor({ state: 'hidden', timeout: 5000 });
+      const result = await fx.locator('#inputResult').text();
+      assert.strictEqual(result, 'Hello, Alice');
+    });
+
+    it('should acknowledge an info dialog', async () => {
+      await fx.locator('#showInfoBtn').click();
+      await fx.locator('#infoDialog').waitFor({ state: 'visible', timeout: 5000 });
+      await fx.locator('text=OK').click();
+      await fx.locator('#infoDialog').waitFor({ state: 'hidden', timeout: 5000 });
+      const result = await fx.locator('#infoResult').text();
+      assert.strictEqual(result, 'Acknowledged');
+    });
+
+    it('should list dialog as a separate window', async () => {
+      await fx.locator('#showAlertBtn').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'visible', timeout: 5000 });
+      // The dialog should be present in the scene graph (extra window)
+      const dialogVisible = await fx.locator('#confirmationDialog').isVisible();
+      assert.ok(dialogVisible, 'Dialog should be visible across windows');
+      await fx.locator('text=OK').click();
+      await fx.locator('#confirmationDialog').waitFor({ state: 'hidden', timeout: 5000 });
+    });
+  });
+
   // ---- Selectors ----
 
   describe('Selectors', () => {
