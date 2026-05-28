@@ -1,6 +1,7 @@
 package com.sicpa.fxagent.api.v1;
 
 import com.sicpa.fxagent.fx.FxExecutor;
+import com.sicpa.fxagent.util.AgentVersion;
 import io.javalin.http.Context;
 import javafx.stage.Window;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 public final class HealthController {
 
     public void health(Context ctx) {
-        ctx.json(Map.of("status", "ok", "version", "0.1.0"));
+        ctx.json(Map.of("status", "ok", "version", AgentVersion.get()));
     }
 
     public void ready(Context ctx) {

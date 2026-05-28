@@ -288,6 +288,15 @@ describe('ShowcaseApp Integration Tests', () => {
     it('should wait for an element to be visible', async () => {
       await fx.locator('#buttonStatus').waitFor({ state: 'visible', timeout: 5000 });
     });
+
+    it('should report a version from the JAR manifest (not hardcoded)', async () => {
+      const port: number = (fx as unknown as { _port: number })._port;
+      const res = await fetch(`http://127.0.0.1:${port}/api/v1/health`);
+      const body = await res.json() as { status: string; version: string };
+      assert.strictEqual(body.status, 'ok');
+      assert.match(body.version, /^\d+\.\d+\.\d+/, `version should look semver-ish, got "${body.version}"`);
+      assert.notStrictEqual(body.version, '0.1.0', 'version should not be the old hardcoded 0.1.0');
+    });
   });
 
   // ---- Screenshots ----
